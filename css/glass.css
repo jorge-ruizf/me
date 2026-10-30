@@ -1,0 +1,77 @@
+/* ==========================================================================
+   glass.css — reusable liquid-glass surfaces
+   CSS translation of the Astro <LiquidGlass> surface. The source uses an SVG
+   displacement filter; this build keeps the same visual grammar with
+   backdrop-filter, a bright inner edge and a tinted translucent fill.
+   ========================================================================== */
+
+.glass {
+  position: relative;
+  isolation: isolate;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-inset), var(--glass-shadow);
+  -webkit-backdrop-filter:
+    blur(var(--glass-blur)) saturate(var(--glass-saturate))
+    brightness(var(--glass-brightness));
+  backdrop-filter:
+    blur(var(--glass-blur)) saturate(var(--glass-saturate))
+    brightness(var(--glass-brightness));
+}
+
+/* Large surface used by project cards. */
+.glass--card {
+  padding: var(--card-padding);
+  border-radius: var(--radius-lg);
+}
+
+/* Small control surface. It deliberately does not add a second backdrop
+   filter: it normally sits inside an already-filtered card. */
+.glass--pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* Mobile GPUs handle fewer stacked filters better. */
+@media (max-width: 600px) {
+  .glass {
+    --glass-blur: 14px;
+  }
+}
+
+/* If blur is unavailable, keep the translucent look with a solid tint. */
+@supports not (backdrop-filter: blur(1px)) {
+  .glass {
+    background: var(--glass-tint-strong);
+  }
+}
+
+/* Users who ask for less transparency get an opaque, still layered surface. */
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    background: var(--glass-tint-strong);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow:
+      var(--glass-inset),
+      0 24px 54px -32px rgba(0, 0, 0, 0.85);
+  }
+}
+
+/* Stronger edges and no blur when the OS asks for more contrast. */
+@media (prefers-contrast: more) {
+  .glass {
+    background: #0b1020;
+    border-color: rgba(255, 255, 255, 0.42);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
